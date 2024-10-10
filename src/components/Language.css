@@ -1,0 +1,14 @@
+.input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .input-container .katex {
+    margin-right: 10px;
+  }
+
+
+  .input-field {
+    width: calc(100% / 6);
+  }

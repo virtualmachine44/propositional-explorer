@@ -1,0 +1,9 @@
+.formula-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .formula-container .katex {
+    margin-right: 10px;
+  }
