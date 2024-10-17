@@ -61,8 +61,12 @@ class PredicateAtom extends Formula {
     }
 
     isTrue(m: Map<string, boolean>): boolean {
-        // ...
-        return false;
+        const atomString = this.toString();
+        if (m.has(atomString)) {
+            return m.get(atomString) as boolean;
+        } else {
+            throw new Error(`Atom string "${atomString}" not found in the map.`);
+        }
     }
 
     atoms(): Set<PredicateAtom> {
@@ -103,8 +107,11 @@ class Negation extends Formula {
         return `\\neg (${this.original.toTex()})`;
     }
 
-    public isTrue(m: Map<string, boolean>): boolean {
-        return !this.original.isTrue(m);
+    public isTrue(v: Map<string, boolean>): boolean {
+        if (!v.has(this.original.toString())) {
+            throw new Error('Atom not found in the map');
+        }
+        return !this.original.isTrue(v);
     }
 
     public atoms(): Set<PredicateAtom> {
@@ -152,6 +159,9 @@ class Conjunction extends Formula {
 
     public isTrue(v: Map<string, boolean>): boolean {
         for (const form of this.conjuncts) {
+            if (!v.has(form.toString())) {
+                throw new Error('Atom not found in the map');
+            }
             if (!form.isTrue(v)) {
                 return false;
             }
@@ -221,6 +231,9 @@ class Disjunction extends Formula {
 
     public isTrue(v: Map<string, boolean>): boolean {
         for (const form of this.disjuncts) {
+            if (!v.has(form.toString())) {
+                throw new Error('Atom not found in the map');
+            }
             if (form.isTrue(v)) {
                 return true;
             }
@@ -313,6 +326,9 @@ class BinaryFormula extends Formula {
     }*/
 
     isTrue(v: Map<string, boolean>): boolean {
+        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
+            throw new Error('Atom not found in the map');
+        }
         return this.left.isTrue(v) && this.right.isTrue(v);
     }
 }
@@ -327,6 +343,9 @@ class Implication extends BinaryFormula {
     }*/
 
     isTrue(v: Map<string, boolean>): boolean {
+        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
+            throw new Error('Atom not found in the map');
+        }
         return !this.leftSide().isTrue(v) || this.rightSide().isTrue(v);
     }
 }
@@ -346,6 +365,9 @@ class Equivalence extends BinaryFormula {
     }*/
 
     isTrue(v: Map<string, boolean>): boolean {
+        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
+            throw new Error('Atom not found in the map');
+        }
         return this.leftSide().isTrue(v) === this.rightSide().isTrue(v);
     }
 }

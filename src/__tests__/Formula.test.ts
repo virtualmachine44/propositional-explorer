@@ -255,3 +255,86 @@ describe('Formula subfs method tests', () => {
       });
   });
 });
+
+
+describe('Formula isTrue method tests', () => {
+  let variableMap: Map<string, boolean>;
+
+  beforeEach(() => {
+      variableMap = new Map<string, boolean>([
+          ['A', true],
+          ['B', false],
+          ['C', true],
+          ['D', false]
+      ]);
+  });
+
+  test('Constant isTrue', () => {
+      const trueConstant = new Constant(true);
+      const falseConstant = new Constant(false);
+      expect(trueConstant.isTrue(variableMap)).toBe(true);
+      expect(falseConstant.isTrue(variableMap)).toBe(false);
+  });
+
+  test('PredicateAtom isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const atomB = new PredicateAtom('B');
+      expect(atomA.isTrue(variableMap)).toBe(true);
+      expect(atomB.isTrue(variableMap)).toBe(false);
+  });
+
+  test('Negation isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const negationA = new Negation(atomA);
+      expect(negationA.isTrue(variableMap)).toBe(false);
+  });
+
+  test('Conjunction isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const atomC = new PredicateAtom('C');
+      const conjunction = new Conjunction([atomA, atomC]);
+      expect(conjunction.isTrue(variableMap)).toBe(true);
+  });
+
+  test('Disjunction isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const atomB = new PredicateAtom('B');
+      const disjunction = new Disjunction([atomA, atomB]);
+      expect(disjunction.isTrue(variableMap)).toBe(true);
+  });
+
+  test('Implication isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const atomB = new PredicateAtom('B');
+      const implication = new Implication(atomA, atomB);
+      expect(implication.isTrue(variableMap)).toBe(false);
+  });
+
+  test('Equivalence isTrue', () => {
+      const atomA = new PredicateAtom('A');
+      const atomC = new PredicateAtom('C');
+      const equivalence = new Equivalence(atomA, atomC);
+      expect(equivalence.isTrue(variableMap)).toBe(true);
+  });
+
+  test('Exception handling in Conjunction', () => {
+      const atomA = new PredicateAtom('A');
+      const atomE = new PredicateAtom('E'); // E is not in the map
+      const conjunction = new Conjunction([atomA, atomE]);
+      expect(() => conjunction.isTrue(variableMap)).toThrow('Atom not found in the map');
+  });
+
+  test('Exception handling in Disjunction', () => {
+      const atomA = new PredicateAtom('A');
+      const atomE = new PredicateAtom('E'); // E is not in the map
+      const disjunction = new Disjunction([atomA, atomE]);
+      expect(() => disjunction.isTrue(variableMap)).toThrow('Atom not found in the map');
+  });
+
+  test('Exception handling in Equivalence', () => {
+      const atomA = new PredicateAtom('A');
+      const atomE = new PredicateAtom('E'); // E is not in the map
+      const equivalence = new Equivalence(atomA, atomE);
+      expect(() => equivalence.isTrue(variableMap)).toThrow('Atom not found in the map');
+  });
+});
