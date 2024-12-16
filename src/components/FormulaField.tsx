@@ -1,6 +1,8 @@
 import React from 'react';
-import { FormulaState } from '../store/formulasSlice'
+import { FormulaState, selectParsedFormula } from '../store/formulasSlice'
 import { InlineMath, BlockMath } from 'react-katex';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 interface FormulaFieldProps {
   formula: FormulaState;
@@ -11,6 +13,8 @@ interface FormulaFieldProps {
 }
 
 const FormulaField: React.FC<FormulaFieldProps> = ({ formula, index, onInputChange, onDropdownChange, onRemove }) => {
+
+  const { parsedFormula, error } = useSelector((state: RootState) => selectParsedFormula(state, index));
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>

@@ -6,6 +6,10 @@ class Constant {
     toString(): string {
         return this.name;
     }
+
+    toTex(): string {
+        return `\\text{\\textsf{${this.name}}}`;
+    }
 }
 
 abstract class Formula {
@@ -20,7 +24,7 @@ abstract class Formula {
     }
 
     public toTex(): string {
-        return `(\\${
+        return `(${
             this.subfs().map((subf) => subf.toTex()).join(this.connectiveTex)
         })`;
     }
@@ -56,8 +60,9 @@ class PredicateAtom extends Formula {
     }
 
     toTex(): string {
-        const argsStr = this.args.map(arg => arg.toString()).join(',');
-        return `\\${this.predName}(${argsStr})`;
+        const argsStr = this.args.map(arg => arg.toTex()).join(',');
+        //return `\\text{\\textsf{${this.predName}($(argsStr))}}`;
+        return `\\text{\\textsf{${this.predName}}}(${argsStr})`;
     }
 
     isTrue(m: Map<string, boolean>): boolean {
@@ -65,7 +70,7 @@ class PredicateAtom extends Formula {
         if (m.has(atomString)) {
             return m.get(atomString) as boolean;
         } else {
-            throw new Error(`Atom string "${atomString}" not found in the map.`);
+            throw new Error(`Atom "${atomString}" not found in the valuation.`);
         }
     }
 
@@ -104,7 +109,7 @@ class Negation extends Formula {
     }
 
     public toTex(): string {
-        return `\\neg (${this.original.toTex()})`;
+        return `\\lnot ${this.original.toTex()}`;
     }
 
     public isTrue(v: Map<string, boolean>): boolean {
@@ -127,7 +132,6 @@ class Negation extends Formula {
     }
 }
 
-
 class Conjunction extends Formula {
     private conjuncts: Formula[];
 
@@ -140,28 +144,8 @@ class Conjunction extends Formula {
         return this.conjuncts;
     }
 
-    /*
-    public toTex(): string {
-        let sb = '(';
-        let first = true;
-
-        for (const form of this.conjuncts) {
-            if (!first) {
-                sb += ' \\land ';
-            }
-            sb += form.toTex();
-            first = false;
-        }
-
-        sb += ')';
-        return sb;
-    }*/
-
     public isTrue(v: Map<string, boolean>): boolean {
         for (const form of this.conjuncts) {
-            if (!v.has(form.toString())) {
-                throw new Error('Atom not found in the map');
-            }
             if (!form.isTrue(v)) {
                 return false;
             }
@@ -212,35 +196,14 @@ class Disjunction extends Formula {
         return this.disjuncts;
     }
 
-    /*
-    public toTex(): string {
-        let sb = '(';
-        let first = true;
-
-        for (const form of this.disjuncts) {
-            if (!first) {
-                sb += ' \\lor ';
-            }
-            sb += form.toTex();
-            first = false;
-        }
-
-        sb += ')';
-        return sb;
-    }*/
-
     public isTrue(v: Map<string, boolean>): boolean {
         for (const form of this.disjuncts) {
-            if (!v.has(form.toString())) {
-                throw new Error('Atom not found in the map');
-            }
             if (form.isTrue(v)) {
                 return true;
             }
         }
         return false;
     }
-
 
     public atoms(): Set<PredicateAtom> {
         const atoms = new Set<PredicateAtom>();
@@ -272,7 +235,6 @@ class Disjunction extends Formula {
         return preds;
     }
 }
-
 
 class BinaryFormula extends Formula {
     private left: Formula;
@@ -320,15 +282,9 @@ class BinaryFormula extends Formula {
         this.rightSide().predicates().forEach(predicate => predicates.add(predicate));
         return predicates;
     }
-    /*
-    toTex(): string {
-        return `(${this.left.toTex()} ${this.operator} ${this.right.toTex()})`;
-    }*/
+   
 
     isTrue(v: Map<string, boolean>): boolean {
-        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
-            throw new Error('Atom not found in the map');
-        }
         return this.left.isTrue(v) && this.right.isTrue(v);
     }
 }
@@ -337,15 +293,9 @@ class Implication extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
         super(left, right, '->', ' \\rightarrow ');
     }
-    /*
-    toTex(): string {
-        return `(${this.leftSide().toTex()} \\rightarrow ${this.rightSide().toTex()})`;
-    }*/
+   
 
     isTrue(v: Map<string, boolean>): boolean {
-        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
-            throw new Error('Atom not found in the map');
-        }
         return !this.leftSide().isTrue(v) || this.rightSide().isTrue(v);
     }
 }
@@ -354,20 +304,9 @@ class Equivalence extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
         super(left, right, '<->', ' \\leftrightarrow ');
     }
-   /* font ktory vyzera zle nechceme ^^ vo workbooku je zadefinovany \\sym pre predikaty (rozbalime definiciu \\sym)
-   \text{\textsf{…}}
-    \text{\textsf{triangle}}
-    \text{\textsf{A}}
-    `\\text{\\textsf{${this.name}}}`
-
-    toTex(): string {
-        return `(${this.leftSide().toTex()} \\leftrightarrow ${this.rightSide().toTex()})`; 
-    }*/
+   
 
     isTrue(v: Map<string, boolean>): boolean {
-        if (!v.has(this.leftSide.toString()) || !v.has(this.rightSide.toString())) {
-            throw new Error('Atom not found in the map');
-        }
         return this.leftSide().isTrue(v) === this.rightSide().isTrue(v);
     }
 }

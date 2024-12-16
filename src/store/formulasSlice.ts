@@ -1,4 +1,11 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import { selectLanguage } from './languageSlice';
+import { RootState } from './store';
+import { makeLanguageAndFactories } from '../lib/Factories';
+import { factory } from 'typescript';
+import { parseConstants, parsePredicates, SyntaxError, parseFormulaStrict } from '@fmfi-uk-1-ain-412/js-fol-parser';
+
+
 
 export interface FormulaState {
   value: string;
@@ -35,4 +42,47 @@ const formulasSlice = createSlice({
 });
 
 export const { addFormulaField, removeFormulaField, updateFormulaValue, updateDropdownValue } = formulasSlice.actions;
+
+const selectFormulas = (state: RootState) => state.formulas.formulas;
+
+const selectFormula = (state: RootState, index: number) => state.formulas.formulas[index];
+
+/*
+// ako sparsujem formulu? 
+*/
+export const selectParsedFormula = createSelector(
+  [selectLanguage, selectFormula],
+  (languageState, formula) => {
+    //function parseTerm<Term>(input: string, language: Language, factories: TermFactories<Term>): Term
+    // prejst vsetky formuly z pola a vytvorit nove pole s parsedFormulami
+    // vrati pole so sparsovanymi formulami
+    if (!languageState.language) {
+      return { parsedFormula: null, error: new Error("Cannot parse formula with invalid language") };
+    }   
+    try {
+      return { parsedFormula: parseFormulaStrict(formula.value, languageState.language, languageState.factories), error: null };
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return { parsedFormula: null, error: new Error("Cannot parse formula with invalid language") };
+      }
+      throw error;
+    }
+  }
+);
+
+// export const selectAreFormulasFromLanguage = createSelector(
+//   [selectLanguage, selectFormula],
+//   (languageState, formulas) => {
+//     if (!languageState) {
+//       return "Language is not defined."
+//     }
+
+//     const parsedFormula = 
+
+
+//   }
+// );
+
+
+
 export default formulasSlice.reducer;

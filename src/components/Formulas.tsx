@@ -32,7 +32,7 @@ const Formulas: React.FC = () => {
           onInputChange={handleInputChange(index)}
           onDropdownChange={handleDropdownChange(index)}
           onRemove={handleRemove(index)}
-          index={index} // index property
+          index={index}
         />
       ))}
       <button onClick={() => dispatch(addFormulaField())}>+ Add</button>
