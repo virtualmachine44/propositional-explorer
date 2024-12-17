@@ -2,7 +2,6 @@ import { createSlice, PayloadAction, createSelector } from '@reduxjs/toolkit';
 import { selectLanguage } from './languageSlice';
 import { RootState } from './store';
 import { makeLanguageAndFactories } from '../lib/Factories';
-import { factory } from 'typescript';
 import { parseConstants, parsePredicates, SyntaxError, parseFormulaStrict } from '@fmfi-uk-1-ain-412/js-fol-parser';
 
 
@@ -43,13 +42,11 @@ const formulasSlice = createSlice({
 
 export const { addFormulaField, removeFormulaField, updateFormulaValue, updateDropdownValue } = formulasSlice.actions;
 
-const selectFormulas = (state: RootState) => state.formulas.formulas;
+//const selectFormulas = (state: RootState) => state.formulas.formulas;
 
 const selectFormula = (state: RootState, index: number) => state.formulas.formulas[index];
 
-/*
-// ako sparsujem formulu? 
-*/
+
 export const selectParsedFormula = createSelector(
   [selectLanguage, selectFormula],
   (languageState, formula) => {
@@ -69,20 +66,5 @@ export const selectParsedFormula = createSelector(
     }
   }
 );
-
-// export const selectAreFormulasFromLanguage = createSelector(
-//   [selectLanguage, selectFormula],
-//   (languageState, formulas) => {
-//     if (!languageState) {
-//       return "Language is not defined."
-//     }
-
-//     const parsedFormula = 
-
-
-//   }
-// );
-
-
 
 export default formulasSlice.reducer;
