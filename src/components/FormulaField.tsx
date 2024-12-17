@@ -15,6 +15,10 @@ interface FormulaFieldProps {
 const FormulaField: React.FC<FormulaFieldProps> = ({ formula, index, onInputChange, onDropdownChange, onRemove }) => {
 
   const { parsedFormula, error } = useSelector((state: RootState) => selectParsedFormula(state, index));
+  const parsedFormulaString = parsedFormula?.toString();
+  const parsedFormulaTex = parsedFormula?.toTex();
+  const parsedFormulaError = error?.message;
+  const constantsArr = parsedFormula?.constants ? Array.from(parsedFormula.constants()) : [];
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
@@ -36,6 +40,10 @@ const FormulaField: React.FC<FormulaFieldProps> = ({ formula, index, onInputChan
       </select>&nbsp;
       <InlineMath math={`A_{${index + 1}}`} />
       </label>
+      <p style={{ margin: '10px 10px'}}>toString method: {parsedFormulaString};</p>
+      <p style={{ margin: '10px 10px'}}>toTex method: {parsedFormulaTex};</p>
+      <p style={{ margin: '10px 10px'}}>error message: {parsedFormulaError};</p>
+      <p style={{ margin: '10px 10px'}}>constants: {constantsArr.join(', ')}</p>
 
     </div>
   );
