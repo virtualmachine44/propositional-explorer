@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import Language from './components/Language';
 import Formulas from './components/Formulas';
+import Valuation from './components/Valuation';
 
 const App: React.FC = () => {
   return (
@@ -10,6 +11,7 @@ const App: React.FC = () => {
       <div>
         <Language />
         <Formulas />
+        <Valuation />
       </div>
     </Provider>
   );

@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import languageReducer from './languageSlice';
 import formulasReducer from './formulasSlice';
+import valuationReducer from './valuationSlice';
 
 const store = configureStore({
   reducer: {
     language: languageReducer,
     formulas: formulasReducer,
+    valuation: valuationReducer,
   },
 });
 
