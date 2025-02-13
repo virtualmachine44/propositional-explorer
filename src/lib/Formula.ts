@@ -1,3 +1,4 @@
+export type Valuation = { [key: string]: boolean | null } ;
 
 class Constant {
     constructor(private name: string) {
@@ -30,10 +31,14 @@ abstract class Formula {
     }
 
 
-    abstract isTrue(v: Map<string, boolean>): boolean;
+    abstract isTrue(v: Map<string, boolean | null>): boolean | null;
     abstract atoms(): Set<PredicateAtom>;
     abstract constants(): Set<string>;
     abstract predicates(): Set<string>;
+    //abstract signedType(sign: boolean):
+    //abstract signedSubfs(sign: boolean): SignedFormula[]
+    //interface...
+
 }
 
 
@@ -61,14 +66,17 @@ class PredicateAtom extends Formula {
 
     toTex(): string {
         const argsStr = this.args.map(arg => arg.toTex()).join(',');
-        //return `\\text{\\textsf{${this.predName}($(argsStr))}}`;
         return `\\text{\\textsf{${this.predName}}}(${argsStr})`;
     }
 
-    isTrue(m: Map<string, boolean>): boolean {
+    isTrue(v: Map<string, boolean | null>): boolean | null {
         const atomString = this.toString();
-        if (m.has(atomString)) {
-            return m.get(atomString) as boolean;
+        if (v.has(atomString)) {
+            if (v.get(atomString) === null) {
+                throw new Error(`Atom "${atomString}" does not have valuation.`);
+            }
+            return v.get(atomString) as boolean;
+
         } else {
             throw new Error(`Atom "${atomString}" not found in the valuation.`);
         }
@@ -112,7 +120,7 @@ class Negation extends Formula {
         return `\\lnot ${this.original.toTex()}`;
     }
 
-    public isTrue(v: Map<string, boolean>): boolean {
+    public isTrue(v: Map<string, boolean | null>): boolean | null {
         if (!v.has(this.original.toString())) {
             throw new Error('Atom not found in the map');
         }
@@ -144,7 +152,7 @@ class Conjunction extends Formula {
         return this.conjuncts;
     }
 
-    public isTrue(v: Map<string, boolean>): boolean {
+    public isTrue(v: Map<string, boolean | null>): boolean | null {
         for (const form of this.conjuncts) {
             if (!form.isTrue(v)) {
                 return false;
@@ -196,7 +204,7 @@ class Disjunction extends Formula {
         return this.disjuncts;
     }
 
-    public isTrue(v: Map<string, boolean>): boolean {
+    public isTrue(v: Map<string, boolean | null>): boolean | null {
         for (const form of this.disjuncts) {
             if (form.isTrue(v)) {
                 return true;
@@ -284,7 +292,7 @@ class BinaryFormula extends Formula {
     }
    
 
-    isTrue(v: Map<string, boolean>): boolean {
+    isTrue(v: Map<string, boolean | null>): boolean | null {
         return this.left.isTrue(v) && this.right.isTrue(v);
     }
 }
@@ -295,7 +303,7 @@ class Implication extends BinaryFormula {
     }
    
 
-    isTrue(v: Map<string, boolean>): boolean {
+    isTrue(v: Map<string, boolean | null>): boolean | null {
         return !this.leftSide().isTrue(v) || this.rightSide().isTrue(v);
     }
 }
@@ -306,7 +314,7 @@ class Equivalence extends BinaryFormula {
     }
    
 
-    isTrue(v: Map<string, boolean>): boolean {
+    isTrue(v: Map<string, boolean | null>): boolean | null {
         return this.leftSide().isTrue(v) === this.rightSide().isTrue(v);
     }
 }

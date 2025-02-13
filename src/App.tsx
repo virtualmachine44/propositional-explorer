@@ -4,6 +4,7 @@ import store from './store/store';
 import Language from './components/Language';
 import Formulas from './components/Formulas';
 import Valuation from './components/Valuation';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App: React.FC = () => {
   return (

@@ -4,9 +4,9 @@ import { RootState, AppDispatch } from '../store/store';
 import { selectConstants, selectPredicates, selectParsedConstants, selectParsedPredicates, updateCValue, updatePValue } from '../store/languageSlice';
 import 'katex/dist/katex.min.css';
 import { InlineMath, BlockMath } from 'react-katex';
-import './Language.css';
 import SyntErr from './SyntErr';
 import { selectLanguage } from '../store/languageSlice';
+import { Form, Container, Row, Col } from 'react-bootstrap';
 
 const Language: React.FC = () => {
   const constants = useSelector(selectConstants);
@@ -25,41 +25,49 @@ const Language: React.FC = () => {
     console.log(parsedPredicates.error);
   }
 
+  if (error) {
+    console.log(error)
+  }
+
   return (
-    <div>
+    <Container>
       <h1>Language</h1>
-      <div className="input-container">
-        <label>
-        <InlineMath math="\mathcal{C}_\mathcal{L} =" />
-        </label>
-        <input
-          type="text"
-          maxLength={100}
-          value={constants}
-          onChange={(e) => dispatch(updateCValue(e.target.value))}
-          className="input-field"
-        />
-        <SyntErr inputString={constants} error={parsedConstants.error} />
-        
-      </div>
-      <div className="input-container">
-        <InlineMath math="\mathcal{P}_\mathcal{L} =" />
-        <input
-          type="text"
-          maxLength={100}
-          value={predicates}
-          onChange={(e) => dispatch(updatePValue(e.target.value))}
-          className="input-field"
-        />
-        <SyntErr inputString={predicates} error={parsedPredicates.error} />
-
-      </div>
-    </div>
-
-    
+      <Row className="input-container">
+        <Col>
+          <Form.Group controlId="constantsInput">
+            <Form.Label>
+              <InlineMath math="\mathcal{C}_\mathcal{L} =" />
+            </Form.Label>
+            <Form.Control
+              type="text"
+              maxLength={100}
+              value={constants}
+              onChange={(e) => dispatch(updateCValue(e.target.value))}
+              className="input-field"
+            />
+            <SyntErr inputString={constants} error={parsedConstants.error} />
+          </Form.Group>
+        </Col>
+      </Row>
+      <Row className="input-container">
+        <Col>
+          <Form.Group controlId="predicatesInput">
+            <Form.Label>
+              <InlineMath math="\mathcal{P}_\mathcal{L} =" />
+            </Form.Label>
+            <Form.Control
+              type="text"
+              maxLength={100}
+              value={predicates}
+              onChange={(e) => dispatch(updatePValue(e.target.value))}
+              className="input-field"
+            />
+            <SyntErr inputString={predicates} error={parsedPredicates.error} />
+          </Form.Group>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
 export default Language;
-
-

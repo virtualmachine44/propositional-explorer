@@ -5,6 +5,7 @@ import { addFormulaField, removeFormulaField, updateFormulaValue, updateDropdown
 import FormulaField from './FormulaField';
 import 'katex/dist/katex.min.css';
 import { BlockMath } from 'react-katex';
+import { Button, Container, Row, Col } from 'react-bootstrap';
 
 const Formulas: React.FC = () => {
   const formulas = useSelector((state: RootState) => state.formulas.formulas);
@@ -23,20 +24,26 @@ const Formulas: React.FC = () => {
   };
 
   return (
-    <div>
+    <Container>
       <h1>Formulas</h1>
       {formulas.map((formula, index) => (
         <FormulaField
           key={index}
           formula={formula}
+          index={index}
           onInputChange={handleInputChange(index)}
           onDropdownChange={handleDropdownChange(index)}
           onRemove={handleRemove(index)}
-          index={index}
         />
       ))}
-      <button onClick={() => dispatch(addFormulaField())}>+ Add</button>
-    </div>
+      <Row className="mt-3">
+        <Col>
+          <Button variant="primary" onClick={() => dispatch(addFormulaField())}>
+            Add Formula
+          </Button>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

@@ -1,8 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { RootState } from '../store/store';
 import { selectAtoms } from '../store/formulasSlice';
-import { selectValuation, updateValuation } from '../store/valuationSlice';
+import { selectValuation, updateValuation} from '../store/valuationSlice';
+import { Table, Container, Row, Col, Form } from 'react-bootstrap';
+
 
 const Valuation: React.FC = () => {
   const dispatch = useDispatch();
@@ -15,9 +18,9 @@ const Valuation: React.FC = () => {
   };
 
   return (
-    <div>
+    <Container>
       <h1>Valuation</h1>
-      <table>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>Atoms</th>
@@ -29,20 +32,20 @@ const Valuation: React.FC = () => {
             <tr key={index}>
               <td>{atom}</td>
               <td>
-                <select
-                  value={valuation[atom] === true ? 1 : valuation[atom] === false ? 0 : undefined}
+              <Form.Select
+                  value={valuation[atom] === true ? 1 : valuation[atom] === false ? 0 : undefined }
                   onChange={(e) => handleChange(atom, e.target.value)}
                 >
-                  <option value={undefined}>⊨ₚ/⊭ₚ</option>
-                  <option value={1}>⊭ₚ</option>
-                  <option value={0}>⊨ₚ</option>
-                </select>
+                  <option value={undefined}>?</option>
+                  <option value={0}>f</option>
+                  <option value={1}>t</option>
+                </Form.Select>
               </td>
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </Table>
+    </Container>
   );
 };
 

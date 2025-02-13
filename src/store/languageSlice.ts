@@ -3,7 +3,6 @@ import { parseConstants, parsePredicates, SyntaxError } from '@fmfi-uk-1-ain-412
 import { RootState } from './store';
 import { makeLanguageAndFactories } from '../lib/Factories';
 
-
 interface LanguageState {
   constants: string;
   predicates: string;
@@ -71,8 +70,6 @@ export const selectLanguage = createSelector(
 
     return { language, factories, error: null };
   }
-
 );
-
 
 export default languageSlice.reducer;
