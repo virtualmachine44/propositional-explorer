@@ -1,4 +1,4 @@
-export type Valuation = { [key: string]: boolean | null } ;
+export type Valuation = Record<string, boolean | null>;
 
 class Constant {
     constructor(private name: string) {
@@ -20,27 +20,24 @@ abstract class Formula {
 
     public toString(): string {
         return `(${
-            this.subfs().map((subf) => subf.toString()).join(this.connective)
+            this.subfs().map((subf) => subf.toString()).join(` ${this.connective} `)
         })`;
     }
 
     public toTex(): string {
         return `(${
-            this.subfs().map((subf) => subf.toTex()).join(this.connectiveTex)
+            this.subfs().map((subf) => subf.toTex()).join(` ${this.connectiveTex} `)
         })`;
     }
 
-
-    abstract isTrue(v: Map<string, boolean | null>): boolean | null;
+    abstract isTrue(v: Valuation): boolean;
     abstract atoms(): Set<PredicateAtom>;
     abstract constants(): Set<string>;
     abstract predicates(): Set<string>;
     //abstract signedType(sign: boolean):
     //abstract signedSubfs(sign: boolean): SignedFormula[]
     //interface...
-
 }
-
 
 class PredicateAtom extends Formula {
     constructor(private predName: string, private args: Constant[]) {
@@ -69,17 +66,12 @@ class PredicateAtom extends Formula {
         return `\\text{\\textsf{${this.predName}}}(${argsStr})`;
     }
 
-    isTrue(v: Map<string, boolean | null>): boolean | null {
+    isTrue(v: Valuation): boolean {
         const atomString = this.toString();
-        if (v.has(atomString)) {
-            if (v.get(atomString) === null) {
-                throw new Error(`Atom "${atomString}" does not have valuation.`);
-            }
-            return v.get(atomString) as boolean;
-
-        } else {
-            throw new Error(`Atom "${atomString}" not found in the valuation.`);
+        if (v.hasOwnProperty(atomString) && v[atomString] !== null) {
+            return v[atomString] as boolean;
         }
+        throw new Error(`Atom "${atomString}" does not have a valuation.`);
     }
 
     atoms(): Set<PredicateAtom> {
@@ -113,17 +105,14 @@ class Negation extends Formula {
     }
   
     public toString(): string {
-        return `-${this.original.toString()}`;
+        return `¬${this.original.toString()}`;
     }
 
     public toTex(): string {
         return `\\lnot ${this.original.toTex()}`;
     }
 
-    public isTrue(v: Map<string, boolean | null>): boolean | null {
-        if (!v.has(this.original.toString())) {
-            throw new Error('Atom not found in the map');
-        }
+    public isTrue(v: Valuation): boolean {
         return !this.original.isTrue(v);
     }
 
@@ -144,7 +133,7 @@ class Conjunction extends Formula {
     private conjuncts: Formula[];
 
     constructor(conjuncts: Formula[]) {
-        super('&', ' \\land ');
+        super('∧', '\\land');
         this.conjuncts = conjuncts;
     }
 
@@ -152,43 +141,20 @@ class Conjunction extends Formula {
         return this.conjuncts;
     }
 
-    public isTrue(v: Map<string, boolean | null>): boolean | null {
-        for (const form of this.conjuncts) {
-            if (!form.isTrue(v)) {
-                return false;
-            }
-        }
-        return true;
+    public isTrue(v: Valuation): boolean {
+        return this.conjuncts.every(form => form.isTrue(v));
     }
 
     public atoms(): Set<PredicateAtom> {
-        const atoms = new Set<PredicateAtom>();
-
-        for (const form of this.conjuncts) {
-            form.atoms().forEach(atom => atoms.add(atom));
-        }
-
-        return atoms;
+        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
     }
-
+   
     public constants(): Set<string> {
-        const consts = new Set<string>();
-
-        for (const form of this.conjuncts) {
-            form.constants().forEach(constant => consts.add(constant));
-        }
-
-        return consts;
+        return new Set(this.conjuncts.flatMap(form => Array.from(form.constants())));
     }
 
     public predicates(): Set<string> {
-        const preds = new Set<string>();
-
-        for (const form of this.conjuncts) {
-            form.predicates().forEach(predicate => preds.add(predicate));
-        }
-
-        return preds;
+        return new Set(this.conjuncts.flatMap(form => Array.from(form.predicates())));
     }
 }
 
@@ -196,7 +162,7 @@ class Disjunction extends Formula {
     private disjuncts: Formula[];
 
     constructor(disjuncts: Formula[]) {
-        super('|', ' \\lor ');
+        super('∨', '\\lor');
         this.disjuncts = disjuncts;
     }
 
@@ -204,43 +170,20 @@ class Disjunction extends Formula {
         return this.disjuncts;
     }
 
-    public isTrue(v: Map<string, boolean | null>): boolean | null {
-        for (const form of this.disjuncts) {
-            if (form.isTrue(v)) {
-                return true;
-            }
-        }
-        return false;
+    public isTrue(v: Valuation): boolean {
+        return this.disjuncts.some(form => form.isTrue(v));
     }
 
     public atoms(): Set<PredicateAtom> {
-        const atoms = new Set<PredicateAtom>();
-
-        for (const form of this.disjuncts) {
-            form.atoms().forEach(atom => atoms.add(atom));
-        }
-
-        return atoms;
+        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
     }
 
     public constants(): Set<string> {
-        const consts = new Set<string>();
-
-        for (const form of this.disjuncts) {
-            form.constants().forEach(constant => consts.add(constant));
-        }
-
-        return consts;
+        return new Set(this.disjuncts.flatMap(form => Array.from(form.constants())));
     }
 
     public predicates(): Set<string> {
-        const preds = new Set<string>();
-
-        for (const form of this.disjuncts) {
-            form.predicates().forEach(predicate => preds.add(predicate));
-        }
-
-        return preds;
+        return new Set(this.disjuncts.flatMap(form => Array.from(form.predicates())));
     }
 }
 
@@ -271,50 +214,38 @@ class BinaryFormula extends Formula {
     }
 
     public atoms(): Set<PredicateAtom> {
-        const atoms = new Set<PredicateAtom>();
-        this.leftSide().atoms().forEach(atom => atoms.add(atom));
-        this.rightSide().atoms().forEach(atom => atoms.add(atom));
-        return atoms;
+        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
     }
 
     public constants(): Set<string> {
-        const constants = new Set<string>();
-        this.leftSide().constants().forEach(constant => constants.add(constant));
-        this.rightSide().constants().forEach(constant => constants.add(constant));
-        return constants;
+        return new Set(this.subfs().flatMap(form => Array.from(form.constants())));
     }
 
     public predicates(): Set<string> {
-        const predicates = new Set<string>();
-        this.leftSide().predicates().forEach(predicate => predicates.add(predicate));
-        this.rightSide().predicates().forEach(predicate => predicates.add(predicate));
-        return predicates;
+        return new Set(this.subfs().flatMap(form => Array.from(form.predicates())));
     }
    
-
-    isTrue(v: Map<string, boolean | null>): boolean | null {
+    isTrue(v: Valuation): boolean {
         return this.left.isTrue(v) && this.right.isTrue(v);
     }
 }
 
 class Implication extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
-        super(left, right, '->', ' \\rightarrow ');
+        super(left, right, '→', '\\rightarrow');
     }
-   
 
-    isTrue(v: Map<string, boolean | null>): boolean | null {
+    isTrue(v: Valuation): boolean {
         return !this.leftSide().isTrue(v) || this.rightSide().isTrue(v);
     }
 }
 
 class Equivalence extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
-        super(left, right, '<->', ' \\leftrightarrow ');
+        super(left, right, '↔︎', '\\leftrightarrow');
     }
-   
 
-    isTrue(v: Map<string, boolean | null>): boolean | null {
+    isTrue(v: Valuation): boolean {
         return this.leftSide().isTrue(v) === this.rightSide().isTrue(v);
     }
 }
