@@ -38,7 +38,7 @@ const Language: React.FC = () => {
               <Form.Label>
                 Individual constants
               </Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <InputGroup.Text>
                   <InlineMath math="\mathcal{C}_\mathcal{L} = \{" />
                 </InputGroup.Text>
@@ -65,7 +65,7 @@ const Language: React.FC = () => {
               <Form.Label>
                 Predicate symbols
               </Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <InputGroup.Text>
                   <InlineMath math="\mathcal{P}_\mathcal{L} = \{" />
                 </InputGroup.Text>
