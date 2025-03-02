@@ -31,9 +31,19 @@ abstract class Formula {
     }
 
     abstract isTrue(v: Valuation): boolean;
-    abstract atoms(): Set<PredicateAtom>;
-    abstract constants(): Set<string>;
-    abstract predicates(): Set<string>;
+
+    public atoms(): Set<PredicateAtom> {
+        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
+    }
+
+    public constants(): Set<string> {
+        return new Set(this.subfs().flatMap(form => Array.from(form.constants())));
+    }
+
+    public predicates(): Set<string> {
+        return new Set(this.subfs().flatMap(form => Array.from(form.predicates())));
+    }
+
     //abstract signedType(sign: boolean):
     //abstract signedSubfs(sign: boolean): SignedFormula[]
     //interface...
@@ -115,18 +125,6 @@ class Negation extends Formula {
     public isTrue(v: Valuation): boolean {
         return !this.original.isTrue(v);
     }
-
-    public atoms(): Set<PredicateAtom> {
-        return this.original.atoms();
-    }
-
-    public constants(): Set<string> {
-        return this.original.constants();
-    }
-
-    public predicates(): Set<string> {
-        return this.original.predicates();
-    }
 }
 
 class Conjunction extends Formula {
@@ -144,18 +142,6 @@ class Conjunction extends Formula {
     public isTrue(v: Valuation): boolean {
         return this.conjuncts.every(form => form.isTrue(v));
     }
-
-    public atoms(): Set<PredicateAtom> {
-        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
-    }
-   
-    public constants(): Set<string> {
-        return new Set(this.conjuncts.flatMap(form => Array.from(form.constants())));
-    }
-
-    public predicates(): Set<string> {
-        return new Set(this.conjuncts.flatMap(form => Array.from(form.predicates())));
-    }
 }
 
 class Disjunction extends Formula {
@@ -172,18 +158,6 @@ class Disjunction extends Formula {
 
     public isTrue(v: Valuation): boolean {
         return this.disjuncts.some(form => form.isTrue(v));
-    }
-
-    public atoms(): Set<PredicateAtom> {
-        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
-    }
-
-    public constants(): Set<string> {
-        return new Set(this.disjuncts.flatMap(form => Array.from(form.constants())));
-    }
-
-    public predicates(): Set<string> {
-        return new Set(this.disjuncts.flatMap(form => Array.from(form.predicates())));
     }
 }
 
@@ -211,18 +185,6 @@ class BinaryFormula extends Formula {
 
     public subfs(): Formula[] {
         return [this.leftSide(), this.rightSide()];
-    }
-
-    public atoms(): Set<PredicateAtom> {
-        return new Set(this.subfs().flatMap(form => Array.from(form.atoms())));
-    }
-
-    public constants(): Set<string> {
-        return new Set(this.subfs().flatMap(form => Array.from(form.constants())));
-    }
-
-    public predicates(): Set<string> {
-        return new Set(this.subfs().flatMap(form => Array.from(form.predicates())));
     }
    
     isTrue(v: Valuation): boolean {
