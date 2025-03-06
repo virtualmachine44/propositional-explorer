@@ -1,5 +1,15 @@
 export type Valuation = Record<string, boolean | null>;
 
+export enum SignedType {
+    Alpha = "alpha",
+    Beta = "beta"
+}
+
+interface SignedFormula {
+    sign: boolean;
+    f: Formula;
+}
+
 class Constant {
     constructor(private name: string) {
     }
@@ -44,9 +54,8 @@ abstract class Formula {
         return new Set(this.subfs().flatMap(form => Array.from(form.predicates())));
     }
 
-    //abstract signedType(sign: boolean):
-    //abstract signedSubfs(sign: boolean): SignedFormula[]
-    //interface...
+    abstract signedType(sign: boolean): SignedType;
+    abstract signedSubfs(sign: boolean): SignedFormula[];
 }
 
 class PredicateAtom extends Formula {
@@ -95,6 +104,14 @@ class PredicateAtom extends Formula {
     predicates(): Set<string> {
         return new Set([this.predName]);
     }
+
+    signedType(sign: boolean): SignedType {
+        return SignedType.Alpha;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return [];
+    }
 }
 
 
@@ -125,6 +142,14 @@ class Negation extends Formula {
     public isTrue(v: Valuation): boolean {
         return !this.original.isTrue(v);
     }
+
+    signedType(sign: boolean): SignedType {
+        return SignedType.Alpha;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return [{ sign: !sign,  f: this.original }];
+    }
 }
 
 class Conjunction extends Formula {
@@ -142,6 +167,14 @@ class Conjunction extends Formula {
     public isTrue(v: Valuation): boolean {
         return this.conjuncts.every(form => form.isTrue(v));
     }
+
+    signedType(sign: boolean): SignedType {
+        return sign ? SignedType.Alpha : SignedType.Beta;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return this.conjuncts.map(f => ({ sign, f }));
+    }
 }
 
 class Disjunction extends Formula {
@@ -158,6 +191,14 @@ class Disjunction extends Formula {
 
     public isTrue(v: Valuation): boolean {
         return this.disjuncts.some(form => form.isTrue(v));
+    }
+
+    signedType(sign: boolean): SignedType {
+        return sign ? SignedType.Beta : SignedType.Alpha;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return this.disjuncts.map(f => ({ sign, f }));
     }
 }
 
@@ -190,6 +231,17 @@ class BinaryFormula extends Formula {
     isTrue(v: Valuation): boolean {
         return this.left.isTrue(v) && this.right.isTrue(v);
     }
+
+    signedType(sign: boolean): SignedType {
+        return SignedType.Alpha;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return [
+            { sign, f: this.left },
+            { sign, f: this.right }
+        ];
+    }
 }
 
 class Implication extends BinaryFormula {
@@ -200,6 +252,14 @@ class Implication extends BinaryFormula {
     isTrue(v: Valuation): boolean {
         return !this.leftSide().isTrue(v) || this.rightSide().isTrue(v);
     }
+
+    signedType(sign: boolean): SignedType {
+        return sign ? SignedType.Beta : SignedType.Alpha;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return [{ sign: !sign, f: this.leftSide() }, { sign, f: this.rightSide() }];
+    }
 }
 
 class Equivalence extends BinaryFormula {
@@ -209,6 +269,17 @@ class Equivalence extends BinaryFormula {
 
     isTrue(v: Valuation): boolean {
         return this.leftSide().isTrue(v) === this.rightSide().isTrue(v);
+    }
+
+    signedType(sign: boolean): SignedType {
+        return sign ? SignedType.Alpha : SignedType.Beta;
+    }
+
+    signedSubfs(sign: boolean): SignedFormula[] {
+        return [
+            { sign, f: new Implication(this.leftSide(), this.rightSide()) },
+            { sign, f: new Implication(this.rightSide(), this.leftSide()) }
+        ];
     }
 }
 
