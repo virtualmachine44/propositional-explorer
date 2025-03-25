@@ -97,6 +97,17 @@ describe('Formula signedType signedSubfs', () => {
         ]);
     });
 
+    test ('Negation2 signedType signedSubfs', () => {
+        const negation2 = new Negation(new Conjunction([A, B, C]));
+
+        expect(negation2.signedType(true)).toBe(SignedType.Alpha);
+        expect(negation2.signedType(false)).toBe(SignedType.Alpha);
+
+        expect(negation2.signedSubfs(true)).toEqual([
+            {sign: false, f: new Conjunction([A, B, C])}
+        ]);
+    })
+
     test('PredicateAtom signedType signedSubfs', () => {
         expect(A.signedType(true)).toBe(SignedType.Alpha);
         expect(A.signedType(false)).toBe(SignedType.Alpha);

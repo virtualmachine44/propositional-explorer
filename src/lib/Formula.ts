@@ -5,12 +5,12 @@ export enum SignedType {
     Beta = "beta"
 }
 
-interface SignedFormula {
+export interface SignedFormula {
     sign: boolean;
     f: Formula;
 }
 
-class Constant {
+export class Constant {
     constructor(private name: string) {
     }
 
@@ -23,7 +23,7 @@ class Constant {
     }
 }
 
-abstract class Formula {
+export abstract class Formula {
     protected constructor(private connective: string, private connectiveTex: string) {};
 
     abstract subfs(): Formula[];
@@ -58,7 +58,7 @@ abstract class Formula {
     abstract signedSubfs(sign: boolean): SignedFormula[];
 }
 
-class PredicateAtom extends Formula {
+export class PredicateAtom extends Formula {
     constructor(private predName: string, private args: Constant[]) {
         super('', '');
     }
@@ -115,7 +115,7 @@ class PredicateAtom extends Formula {
 }
 
 
-class Negation extends Formula {
+export class Negation extends Formula {
     private original: Formula;
 
     constructor(originalFormula: Formula) {
@@ -152,7 +152,7 @@ class Negation extends Formula {
     }
 }
 
-class Conjunction extends Formula {
+export class Conjunction extends Formula {
     private conjuncts: Formula[];
 
     constructor(conjuncts: Formula[]) {
@@ -177,7 +177,7 @@ class Conjunction extends Formula {
     }
 }
 
-class Disjunction extends Formula {
+export class Disjunction extends Formula {
     private disjuncts: Formula[];
 
     constructor(disjuncts: Formula[]) {
@@ -202,7 +202,7 @@ class Disjunction extends Formula {
     }
 }
 
-class BinaryFormula extends Formula {
+export class BinaryFormula extends Formula {
     private left: Formula;
     private right: Formula;
     private operator: string;
@@ -244,7 +244,7 @@ class BinaryFormula extends Formula {
     }
 }
 
-class Implication extends BinaryFormula {
+export class Implication extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
         super(left, right, '→', '\\rightarrow');
     }
@@ -262,7 +262,7 @@ class Implication extends BinaryFormula {
     }
 }
 
-class Equivalence extends BinaryFormula {
+export class Equivalence extends BinaryFormula {
     constructor(left: Formula, right: Formula) {
         super(left, right, '↔︎', '\\leftrightarrow');
     }
@@ -282,5 +282,3 @@ class Equivalence extends BinaryFormula {
         ];
     }
 }
-
-export { Constant, Formula, PredicateAtom, Negation, Conjunction, Disjunction, BinaryFormula, Implication, Equivalence };

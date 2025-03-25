@@ -1,6 +1,4 @@
-import { isTypeOperatorNode } from 'typescript';
-import { Constant, Formula, PredicateAtom, Negation, Conjunction, Disjunction, BinaryFormula, Implication, Equivalence } from '../FormulaTmp';
-
+import { Valuation, Constant, Formula, PredicateAtom, Negation, Conjunction, Disjunction, Implication, Equivalence } from '../lib/Formula'
 
 describe('PredicateAtom Class Tests', () => {
   const c = new Constant('ccc');
@@ -17,7 +15,7 @@ describe('PredicateAtom Class Tests', () => {
     expect(pcd.arguments()).toEqual([c, d]);
     expect(pcd.subfs()).toEqual([]);
     expect(pcd.toString()).toBe(`${pn}(${cn},${dn})`);
-    expect(pcd.toTex()).toBe(`\\${pn}{${cn},${dn}}`);
+    expect(pcd.toTex()).toBe(`\\text{\\textsf{${pn}}}(\\text{\\textsf{${cn}}},\\text{\\textsf{${dn}}})`);
   });
 
   test('PredicateAtom constants, predicates, and atoms', () => {
@@ -34,6 +32,7 @@ describe('Negation Class Tests', () => {
     const d = new Constant('ddd');
     const pn = 'Ppp';
     const cn = 'ccc';
+    const operator = '¬'
   
     const p = (...args: Constant[]) => new PredicateAtom(pn, args);
     const Neg = (formula: Formula) => new Negation(formula);
@@ -43,8 +42,8 @@ describe('Negation Class Tests', () => {
       const n = Neg(pc);
   
       expect(n.originalFormula()).toBe(pc);
-      expect(n.toString()).toBe(`-${pn}(${cn})`);
-      expect(n.toTex()).toBe(`\\neg (${pn}(${cn}))`);
+      expect(n.toString()).toBe(`${operator}${pn}(${cn})`);
+      expect(n.toTex()).toBe(`\\lnot \\text{\\textsf{${pn}}}(\\text{\\textsf{${cn}}})`); 
   
       expect(n.subfs()).toEqual([pc]);
       expect(n.constants()).toEqual(new Set([cn]));
@@ -59,6 +58,7 @@ describe('Disjunction Class Tests1', () => {
     const pn = 'Ppp';
     const cn = 'ccc';
     const dn = 'ddd';
+    const operator = ' ∨ '
 
     const p = (...args: Constant[]) => new PredicateAtom(pn, args);
     const Or = (...formulas: Formula[]) => new Disjunction(formulas);
@@ -68,7 +68,7 @@ describe('Disjunction Class Tests1', () => {
         const pd = p(d);
         const dis = Or(pc, pd);
 
-        expect(dis.toString()).toBe(`(${pn}(${cn})|${pn}(${dn}))`);
+        expect(dis.toString()).toBe(`(${pn}(${cn})${operator}${pn}(${dn}))`);
 
         expect(dis.subfs()).toEqual([pc, pd]);
         expect(dis.constants()).toEqual(new Set([cn, dn]));
@@ -83,6 +83,7 @@ describe('Disjunction Class Tests2', () => {
     const pn = 'Ppp';
     const cn = 'ccc';
     const dn = 'ddd';
+    const operator = ' ∨ '
 
     const p = (...args: Constant[]) => new PredicateAtom(pn, args);
     const Or = (...formulas: Formula[]) => new Disjunction(formulas);
@@ -92,7 +93,7 @@ describe('Disjunction Class Tests2', () => {
         const pd = p(d);
         const dis = Or(pc, pd);
 
-        expect(dis.toString()).toBe(`(${pn}(${cn})|${pn}(${dn}))`);
+        expect(dis.toString()).toBe(`(${pn}(${cn})${operator}${pn}(${dn}))`);
 
         expect(dis.subfs()).toEqual([pc, pd]);
         expect(dis.constants()).toEqual(new Set([cn, dn]));
@@ -119,6 +120,7 @@ describe('Conjunction Class Tests', () => {
   const pn = 'Ppp';
   const cn = 'ccc';
   const dn = 'ddd';
+  const operator = ' ∧ '
 
   const p = (...args: Constant[]) => new PredicateAtom(pn, args);
   const And = (...formulas: Formula[]) => new Conjunction(formulas);
@@ -128,7 +130,7 @@ describe('Conjunction Class Tests', () => {
       const pd = p(d);
       const con = And(pc, pd);
 
-      expect(con.toString()).toBe(`(${pn}(${cn})&${pn}(${dn}))`);
+      expect(con.toString()).toBe(`(${pn}(${cn})${operator}${pn}(${dn}))`);
 
       expect(con.subfs()).toEqual([pc, pd]);
       expect(con.constants()).toEqual(new Set([cn, dn]));
@@ -166,7 +168,7 @@ describe('Implication Class Tests', () => {
   const pn = 'Ppp';
   const cn = 'ccc';
   const dn = 'ddd';
-  const operator = '->';
+  const operator = ' → ';
 
   const p = (...args: Constant[]) => new PredicateAtom(pn, args);
   const Impl = (left: Formula, right: Formula) => new Implication(left, right);
@@ -180,7 +182,7 @@ describe('Implication Class Tests', () => {
       expect(impl.leftSide()).toBe(pc);
       expect(impl.rightSide()).toBe(pd);
 
-      expect(impl.toString()).toBe(`(${pn}(${cn})->${pn}(${dn}))`);
+      expect(impl.toString()).toBe(`(${pn}(${cn})${operator}${pn}(${dn}))`);
 
       expect(impl.subfs()).toEqual([pc, pd]);
       expect(impl.constants()).toEqual(new Set([cn, dn]));
@@ -195,7 +197,7 @@ describe('Equivalence Class Tests', () => {
   const pn = 'Ppp';
   const cn = 'ccc';
   const dn = 'ddd';
-  const operator = '<->'
+  const operator = ' ↔︎ '
 
   const p = (...args: Constant[]) => new PredicateAtom(pn, args);
   const Eq = (left: Formula, right: Formula) => new Equivalence(left, right);
@@ -209,7 +211,7 @@ describe('Equivalence Class Tests', () => {
       expect(eq.leftSide()).toBe(pc);
       expect(eq.rightSide()).toBe(pd);
 
-      expect(eq.toString()).toBe(`(${pn}(${cn})<->${pn}(${dn}))`);
+      expect(eq.toString()).toBe(`(${pn}(${cn})${operator}${pn}(${dn}))`);
 
       expect(eq.subfs()).toEqual([pc, pd]);
       expect(eq.constants()).toEqual(new Set([cn, dn]));
@@ -256,85 +258,69 @@ describe('Formula subfs method tests', () => {
   });
 });
 
-
 describe('Formula isTrue method tests', () => {
-  let variableMap: Map<string, boolean>;
+  let valuation: Valuation;
 
   beforeEach(() => {
-      variableMap = new Map<string, boolean>([
-          ['A', true],
-          ['B', false],
-          ['C', true],
-          ['D', false]
-      ]);
+    valuation = {
+        'pride(Kim)': true,
+        'pride(Jim)': false,
+        'pride(Sarah)': true,
+    };
   });
 
-  test('Constant isTrue', () => {
-      const trueConstant = new Constant(true);
-      const falseConstant = new Constant(false);
-      expect(trueConstant.isTrue(variableMap)).toBe(true);
-      expect(falseConstant.isTrue(variableMap)).toBe(false);
+  const k = new Constant('Kim');
+  const j = new Constant('Jim');
+  const s = new Constant('Sarah');
+  const p = 'pride';
+  const predicate = (...args: Constant[]) => new PredicateAtom(p, args);
+
+  const pk = predicate(k);
+  const pj = predicate(j);
+  const ps = predicate(s);
+
+  const formulaX = new Implication(new Disjunction([pj, new Negation(pk)]), ps);
+
+  test('Formula X isTrue', () => {
+    expect(pk.isTrue(valuation)).toBe(true);
+    expect(pj.isTrue(valuation)).toBe(false);
+    expect(ps.isTrue(valuation)).toBe(true);
+    expect(formulaX.isTrue(valuation)).toBe(true);
   });
 
-  test('PredicateAtom isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const atomB = new PredicateAtom('B');
-      expect(atomA.isTrue(variableMap)).toBe(true);
-      expect(atomB.isTrue(variableMap)).toBe(false);
-  });
+describe('isTrue method loop', () => {
+  const permutations = [
+    { 'pride(Kim)': true, 'pride(Jim)': true, 'pride(Sarah)': true },
+    { 'pride(Kim)': true, 'pride(Jim)': true, 'pride(Sarah)': false },
+    { 'pride(Kim)': true, 'pride(Jim)': false, 'pride(Sarah)': true },
+    { 'pride(Kim)': true, 'pride(Jim)': false, 'pride(Sarah)': false },
+    { 'pride(Kim)': false, 'pride(Jim)': true, 'pride(Sarah)': true },
+    { 'pride(Kim)': false, 'pride(Jim)': true, 'pride(Sarah)': false },
+    { 'pride(Kim)': false, 'pride(Jim)': false, 'pride(Sarah)': true },
+    { 'pride(Kim)': false, 'pride(Jim)': false, 'pride(Sarah)': false },
+  ];
 
-  test('Negation isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const negationA = new Negation(atomA);
-      expect(negationA.isTrue(variableMap)).toBe(false);
-  });
+  const k = new Constant('Kim');
+  const j = new Constant('Jim');
+  const s = new Constant('Sarah');
+  const p = 'pride';
+  const predicate = (...args: Constant[]) => new PredicateAtom(p, args);
 
-  test('Conjunction isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const atomC = new PredicateAtom('C');
-      const conjunction = new Conjunction([atomA, atomC]);
-      expect(conjunction.isTrue(variableMap)).toBe(true);
-  });
+  const pk = predicate(k);
+  const pj = predicate(j);
+  const ps = predicate(s);
 
-  test('Disjunction isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const atomB = new PredicateAtom('B');
-      const disjunction = new Disjunction([atomA, atomB]);
-      expect(disjunction.isTrue(variableMap)).toBe(true);
-  });
+  const formulaX = new Implication(new Disjunction([pj, new Negation(pk)]), ps);
 
-  test('Implication isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const atomB = new PredicateAtom('B');
-      const implication = new Implication(atomA, atomB);
-      expect(implication.isTrue(variableMap)).toBe(false);
+  permutations.forEach((valuation, index) => {
+    test(`Formula X isTrue with permutation ${index + 1}`, () => {
+      expect(pk.isTrue(valuation)).toBe(valuation['pride(Kim)']);
+      expect(pj.isTrue(valuation)).toBe(valuation['pride(Jim)']);
+      expect(ps.isTrue(valuation)).toBe(valuation['pride(Sarah)']);
+      const expectedFormulaXResult = !valuation['pride(Jim)'] && valuation['pride(Kim)'] || valuation['pride(Sarah)'];
+      expect(formulaX.isTrue(valuation)).toBe(expectedFormulaXResult);
+    });
   });
+});
 
-  test('Equivalence isTrue', () => {
-      const atomA = new PredicateAtom('A');
-      const atomC = new PredicateAtom('C');
-      const equivalence = new Equivalence(atomA, atomC);
-      expect(equivalence.isTrue(variableMap)).toBe(true);
-  });
-
-  test('Exception handling in Conjunction', () => {
-      const atomA = new PredicateAtom('A');
-      const atomE = new PredicateAtom('E'); // E is not in the map
-      const conjunction = new Conjunction([atomA, atomE]);
-      expect(() => conjunction.isTrue(variableMap)).toThrow('Atom not found in the map');
-  });
-
-  test('Exception handling in Disjunction', () => {
-      const atomA = new PredicateAtom('A');
-      const atomE = new PredicateAtom('E'); // E is not in the map
-      const disjunction = new Disjunction([atomA, atomE]);
-      expect(() => disjunction.isTrue(variableMap)).toThrow('Atom not found in the map');
-  });
-
-  test('Exception handling in Equivalence', () => {
-      const atomA = new PredicateAtom('A');
-      const atomE = new PredicateAtom('E'); // E is not in the map
-      const equivalence = new Equivalence(atomA, atomE);
-      expect(() => equivalence.isTrue(variableMap)).toThrow('Atom not found in the map');
-  });
 });

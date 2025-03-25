@@ -1,6 +1,8 @@
-import { Constant }from '../FormulaTmp'
+import { Constant } from '../lib/Formula'
 
-test('Constant class should return the full string', () => {
+test('Constant toString, toTex methods', () => {
     const constant = new Constant('Ccc');
-    expect(constant.toString()).toBe('Ccc');
+    const c = 'Ccc'
+    expect(constant.toString()).toBe(`${c}`);
+    expect(constant.toTex()).toBe(`\\text{\\textsf{${c}}}`);
 });
