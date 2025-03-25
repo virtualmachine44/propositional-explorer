@@ -4,9 +4,9 @@ import { AppDispatch } from '../store/store';
 import { selectConstants, selectPredicates, selectParsedConstants, selectParsedPredicates, updateCValue, updatePValue } from '../store/languageSlice';
 import 'katex/dist/katex.min.css';
 import { InlineMath } from 'react-katex';
-import SyntErr from './SyntErr';
 import { selectLanguage } from '../store/languageSlice';
 import { Form, Row, Col, InputGroup, Card } from 'react-bootstrap';
+import Err from './Err';
 
 const Language: React.FC = () => {
   const constants = useSelector(selectConstants);
@@ -53,7 +53,7 @@ const Language: React.FC = () => {
                   <InlineMath math="\}" />
                 </InputGroup.Text>
                 <Form.Control.Feedback type="invalid">
-                  <SyntErr inputString={constants} error={parsedConstants.error} />
+                  <Err inputString={constants} errors={parsedConstants.error ? [parsedConstants.error] : []} />
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -80,7 +80,7 @@ const Language: React.FC = () => {
                   <InlineMath math="\}" />
                 </InputGroup.Text>
                 <Form.Control.Feedback type="invalid">
-                  <SyntErr inputString={predicates} error={parsedPredicates.error} />
+                  <Err inputString={predicates} errors={parsedPredicates.error ? [parsedPredicates.error] : []} />
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>

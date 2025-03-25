@@ -5,15 +5,29 @@ import Language from './components/Language';
 import Formulas from './components/Formulas';
 import Valuation from './components/Valuation';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Form, Container, Row, Col } from 'react-bootstrap';
+// import TestErr from './components/TestErr';
 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
       <div>
-        <Language />
-        <Formulas />
-        <Valuation />
+        <Container className="py-4">
+        <div className="mb-3">
+            <Language />
+          </div>
+          <div className="mb-3">
+            <Formulas />
+          </div>
+          <div className="mb-3">
+            <Valuation />
+          </div>
+        </Container>
       </div>
+      {/* <div>
+            <h1>Test Err Component</h1>
+            <TestErr />
+        </div> */}
     </Provider>
   );
 };

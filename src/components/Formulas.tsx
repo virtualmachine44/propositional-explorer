@@ -4,8 +4,7 @@ import { RootState, AppDispatch } from '../store/store';
 import { addFormulaField, removeFormulaField, updateFormulaValue, updateDropdownValue } from '../store/formulasSlice';
 import FormulaField from './FormulaField';
 import 'katex/dist/katex.min.css';
-import { BlockMath } from 'react-katex';
-import { Button, Container, Row, Col } from 'react-bootstrap';
+import { Button, Row, Col, Card } from 'react-bootstrap';
 
 const Formulas: React.FC = () => {
   const formulas = useSelector((state: RootState) => state.formulas.formulas);
@@ -24,8 +23,9 @@ const Formulas: React.FC = () => {
   };
 
   return (
-    <Container>
-      <h1>Formulas</h1>
+    <Card>
+      <Card.Header>Formulas</Card.Header>
+      <Card.Body>
       {formulas.map((formula, index) => (
         <FormulaField
           key={index}
@@ -36,14 +36,15 @@ const Formulas: React.FC = () => {
           onRemove={handleRemove(index)}
         />
       ))}
-      <Row className="mt-3">
+      <Row className="mb-3">
         <Col>
-          <Button variant="primary" onClick={() => dispatch(addFormulaField())}>
-            Add Formula
+          <Button variant="success" onClick={() => dispatch(addFormulaField())}>
+            + Add
           </Button>
         </Col>
       </Row>
-    </Container>
+      </Card.Body>
+      </Card>
   );
 };
 

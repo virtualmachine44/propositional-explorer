@@ -1,10 +1,9 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { RootState } from '../store/store';
 import { selectAtoms } from '../store/formulasSlice';
 import { selectValuation, updateValuation} from '../store/valuationSlice';
-import { Table, Container, Row, Col, Form } from 'react-bootstrap';
+import { Table, Form, Card, CardHeader } from 'react-bootstrap';
 
 
 const Valuation: React.FC = () => {
@@ -18,8 +17,8 @@ const Valuation: React.FC = () => {
   };
 
   return (
-    <Container>
-      <h1>Valuation</h1>
+    <Card>
+      <CardHeader>Valuation</CardHeader>
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -45,7 +44,7 @@ const Valuation: React.FC = () => {
           ))}
         </tbody>
       </Table>
-    </Container>
+    </Card>
   );
 };
 

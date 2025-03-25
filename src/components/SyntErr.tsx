@@ -1,7 +1,5 @@
 import React from 'react';
 import { SyntaxError } from '@fmfi-uk-1-ain-412/js-fol-parser';
-import { selectConstants, selectPredicates, selectParsedConstants, selectParsedPredicates, updateCValue, updatePValue } from '../store/languageSlice';
-
 
 interface SyntErrProps {
   inputString: string;
@@ -23,10 +21,8 @@ const SyntErr: React.FC<SyntErrProps> = ({ inputString, error }) => {
 
   return (
     <div className="synt-err">
-      <h3>Syntax Error</h3> 
-      {errorMessage}
       {inputStringBeggining}<mark>{errorSubstring}</mark>{inputStringTheRest}
-      
+      {errorMessage}
     </div>
   );
 };
