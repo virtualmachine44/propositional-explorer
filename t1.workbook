@@ -12,6 +12,12 @@
       "type": "text",
       "data": "",
       "comments": []
+    },
+    {
+      "id": 3,
+      "type": "context",
+      "data": [],
+      "comments": []
     }
   ]
 }
