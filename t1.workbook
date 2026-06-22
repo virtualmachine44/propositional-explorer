@@ -1,11 +1,4 @@
 {
   "versionNumber": 2,
-  "cells": [
-    {
-      "id": 2,
-      "type": "text",
-      "data": "Text",
-      "comments": []
-    }
-  ]
+  "cells": []
 }
