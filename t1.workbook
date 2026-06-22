@@ -6,19 +6,6 @@
       "type": "text",
       "data": "Text",
       "comments": []
-    },
-    {
-      "id": 3,
-      "type": "context",
-      "data": [
-        {
-          "id": 5,
-          "type": "tableauEditor",
-          "data": null,
-          "comments": []
-        }
-      ],
-      "comments": []
     }
   ]
 }
