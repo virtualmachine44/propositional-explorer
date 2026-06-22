@@ -1,1 +1,11 @@
-{"versionNumber":1,"cells":{},"cellsOrder":[]}
+{
+  "versionNumber": 2,
+  "cells": [
+    {
+      "id": 1,
+      "type": "newStructureExplorer",
+      "data": null,
+      "comments": []
+    }
+  ]
+}
