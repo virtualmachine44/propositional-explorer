@@ -20,7 +20,7 @@
         {
           "id": 4,
           "type": "text",
-          "data": "",
+          "data": "T1",
           "comments": []
         },
         {
