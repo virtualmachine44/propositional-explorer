@@ -10,7 +10,7 @@
     {
       "id": 2,
       "type": "text",
-      "data": "",
+      "data": "Text",
       "comments": []
     },
     {
