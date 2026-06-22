@@ -22,6 +22,12 @@
           "type": "text",
           "data": "",
           "comments": []
+        },
+        {
+          "id": 5,
+          "type": "tableauEditor",
+          "data": null,
+          "comments": []
         }
       ],
       "comments": []
