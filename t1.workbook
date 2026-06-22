@@ -12,12 +12,6 @@
       "type": "context",
       "data": [
         {
-          "id": 4,
-          "type": "text",
-          "data": "T1",
-          "comments": []
-        },
-        {
           "id": 5,
           "type": "tableauEditor",
           "data": null,
