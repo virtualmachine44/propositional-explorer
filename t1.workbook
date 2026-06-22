@@ -16,7 +16,14 @@
     {
       "id": 3,
       "type": "context",
-      "data": [],
+      "data": [
+        {
+          "id": 4,
+          "type": "text",
+          "data": "",
+          "comments": []
+        }
+      ],
       "comments": []
     }
   ]
