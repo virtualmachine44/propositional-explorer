@@ -6,6 +6,12 @@
       "type": "newStructureExplorer",
       "data": null,
       "comments": []
+    },
+    {
+      "id": 2,
+      "type": "text",
+      "data": "",
+      "comments": []
     }
   ]
 }
