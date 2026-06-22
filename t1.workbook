@@ -2,12 +2,6 @@
   "versionNumber": 2,
   "cells": [
     {
-      "id": 1,
-      "type": "newStructureExplorer",
-      "data": null,
-      "comments": []
-    },
-    {
       "id": 2,
       "type": "text",
       "data": "Text",
